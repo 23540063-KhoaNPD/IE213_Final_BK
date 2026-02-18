@@ -18,7 +18,7 @@ async function main() {
         await HomeController.injectDB(client);
 
 
-        socketServer.listen(port, 0.0.0.0, () => {
+        socketServer.listen(port, () => {
             console.log(`http running on port ` + port);
         });
 
