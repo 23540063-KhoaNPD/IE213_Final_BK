@@ -19,7 +19,7 @@ async function main() {
 
 
         socketServer.listen(PORT, () => {
-            console.log(`http running on port ` + port);
+            console.log(`http running on port ` + PORT);
         });
 
     } catch (e) {
