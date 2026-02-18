@@ -8,7 +8,7 @@ async function main() {
     /* Init the dotenv library */
     dotenv.config();
 
-    const port = process.env.S_PORT || 8000;
+    const PORT = process.env.PORT || 8080;
 
     const client = new mongodb.MongoClient(process.env.DB_URI);
 
@@ -18,7 +18,7 @@ async function main() {
         await HomeController.injectDB(client);
 
 
-        socketServer.listen(port, () => {
+        socketServer.listen(PORT, () => {
             console.log(`http running on port ` + port);
         });
 
