@@ -12,8 +12,8 @@ const httpServer = createServer(app);
 app.use(cors({ origin: "*" }));
 app.use(express.json());
 
-app.use("/users", userRoutes);
-app.use("/upload-avatar", uploadRoutes);
+app.use("/api/users", userRoutes);
+app.use("/api/upload-avatar", uploadRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Backend running..." });
