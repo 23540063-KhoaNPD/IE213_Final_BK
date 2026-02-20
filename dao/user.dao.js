@@ -20,6 +20,8 @@ export default class UserDAO {
   }
 
   static async findById(id) {
+    console.log("findById ID:", id);
+    
     return await collection.findOne(
       { _id: new ObjectId(id) },
       { projection: { Username: 1, Avatar: 1 } }

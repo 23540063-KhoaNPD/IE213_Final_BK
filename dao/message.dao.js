@@ -11,6 +11,9 @@ export default class MessageDAO {
 
     static async create(message) {
         const result = await collection.insertOne(message);
+        if(!result){
+            throw new Error("message dao error create")
+        }
         return { ...message, _id: result.insertedId };
     }
 

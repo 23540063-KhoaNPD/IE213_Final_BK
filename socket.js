@@ -72,31 +72,21 @@ export default function initSocket(httpServer) {
     /* SEND MESSAGE */
     socket.on("send_msg", async ({ roomId, message }) => {
 
-      // console.log("send_msg received:", roomId, message);
-
       if (!ObjectId.isValid(roomId)) return;
-      if (!message) return;
 
-      const saved = await MessageController.addItem({
-        Room_id: new ObjectId(roomId),
-        Sender_id: new ObjectId(socket.userId),
-        Content: message,
-        Timestamp: new Date(),
-        Type: "Text"
+      const newMessage = await MessageController.addItem({
+        roomId: roomId,
+        userId: socket.userId,
+        content: message,
+        type: "Text"
       });
 
-      const user = await UserController.findById(socket.userId);
-
-      io.to(roomId).emit("receive_msg", {
-        ...saved,
-        Sender_name: user?.Username,
-        Sender_avatar: user?.Avatar
-      });
+      io.to(roomId).emit("receive_msg", newMessage);
     });
 
-    socket.on("image_msg", async (fullMessage) => {
-      io.to(fullMessage.Room_id.toString()).emit("receive_msg", fullMessage);
-    });
+socket.on("image_msg", async (message) => {
+  io.to(message.Room_id.toString()).emit("receive_msg", message);
+});
 
     /* CREATE ROOM */
     socket.on("create_room", async ({ roomName }) => {
