@@ -5,15 +5,18 @@ import initSocket from "./socket.js";
 
 import userRoutes from "./routes/user.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
+import messageUploadRoutes from "./routes/messageUpload.routes.js";
 
 const app = express();
 const httpServer = createServer(app);
 
 app.use(cors({ origin: "*" }));
 app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 app.use("/api/users", userRoutes);
 app.use("/api/upload-avatar", uploadRoutes);
+app.use("/api/upload-message", messageUploadRoutes);
 
 app.get("/", (req, res) => {
   res.json({ message: "Backend running..." });

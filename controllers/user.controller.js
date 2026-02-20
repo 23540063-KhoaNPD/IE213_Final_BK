@@ -23,10 +23,14 @@ export default class UserController {
     }
 
     const token = jwt.sign(
-      { userId: user._id.toString(), email: user.Email },
+      { userId: user._id.toString(), email: user.Email, username: user.Username},
       process.env.JWTKEY,
       { expiresIn: "1h" }
     );
+
+    res.setHeader("Content-Type", "application/json; charset=utf-8");
+
+    console.log(user.Username);
 
     res.json({
       token,

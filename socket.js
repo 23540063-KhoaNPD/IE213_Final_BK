@@ -94,6 +94,10 @@ export default function initSocket(httpServer) {
       });
     });
 
+    socket.on("image_msg", async (fullMessage) => {
+      io.to(fullMessage.Room_id.toString()).emit("receive_msg", fullMessage);
+    });
+
     /* CREATE ROOM */
     socket.on("create_room", async ({ roomName }) => {
 
