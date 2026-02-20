@@ -1,33 +1,38 @@
-import { socketServer } from './server.js';
-import mongodb from "mongodb";
 import dotenv from "dotenv";
+import mongodb from 'mongodb';
 
-import HomeController from './api/homeController.js';
+import appServer from "./server.js";
 
-async function main() {
-    /* Init the dotenv library */
-    dotenv.config();
+import UserDAO from "./dao/user.dao.js";
+import RoomDAO from "./dao/room.dao.js";
+import MessageDAO from "./dao/message.dao.js";
 
-    const PORT = process.env.PORT || 8080;
+dotenv.config();
 
-    const client = new mongodb.MongoClient(process.env.DB_URI);
+const PORT = process.env.PORT || 8080;
+const client = new mongodb.MongoClient(process.env.DB_URI);
 
-    try {
-        await client.connect();
+async function startServer() {
+  try {
 
-        await HomeController.injectDB(client);
+    await client.connect();
+    // console.log("MongoDB connected");
 
+    // const db = client.db(process.env.DB_URI);
 
-        socketServer.listen(PORT, () => {
-            console.log(`http running on port ` + PORT);
-        });
+    // Inject DB vào các DAO
+    await UserDAO.injectDB(client);
+    await RoomDAO.injectDB(client);
+    await MessageDAO.injectDB(client);
 
-    } catch (e) {
-        console.error(`index.js error ${e}`);
-        process.exit(1);
-    }
+    appServer.listen(PORT, () => {
+      console.log(`Server running on port ${PORT}`);
+    });
+
+  } catch (err) {
+    console.error("Server start error:", err);
+    process.exit(1);
+  }
 }
 
-
-
-main().catch(console.error);
+startServer();
