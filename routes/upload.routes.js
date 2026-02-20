@@ -8,7 +8,7 @@ import UserController from "../controllers/user.controller.js";
 const router = express.Router();
 const upload = multer({ dest: "temp/" });
 
-router.post("/avatar", upload.single("avatar"), async (req, res) => {
+router.post("/", upload.single("avatar"), async (req, res) => {
 
   const token = req.headers.authorization?.split(" ")[1];
   const decoded = jwt.verify(token, process.env.JWTKEY);

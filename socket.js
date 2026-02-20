@@ -72,6 +72,8 @@ export default function initSocket(httpServer) {
     /* SEND MESSAGE */
     socket.on("send_msg", async ({ roomId, message }) => {
 
+      // console.log("send_msg received:", roomId, message);
+
       if (!ObjectId.isValid(roomId)) return;
       if (!message) return;
 
