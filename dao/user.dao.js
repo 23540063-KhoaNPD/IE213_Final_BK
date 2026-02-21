@@ -21,12 +21,32 @@ export default class UserDAO {
 
   static async findById(id) {
     console.log("findById ID:", id);
-    
+
+    // Nếu id không tồn tại
+    if (!id) return null;
+
+    let objectId;
+
+    // Nếu đã là ObjectId thì dùng luôn
+    if (id instanceof ObjectId) {
+      objectId = id;
+    }
+    // Nếu là string và hợp lệ thì convert
+    else if (ObjectId.isValid(id)) {
+      objectId = new ObjectId(id);
+    }
+    // Nếu không hợp lệ
+    else {
+      console.warn("Invalid ObjectId:", id);
+      return null;
+    }
+
     return await collection.findOne(
-      { _id: new ObjectId(id) },
+      { _id: objectId },
       { projection: { Username: 1, Avatar: 1 } }
     );
   }
+
 
   static async updateAvatar(userId, avatar) {
     return await collection.updateOne(

@@ -6,6 +6,8 @@ import appServer from "./server.js";
 import UserDAO from "./dao/user.dao.js";
 import RoomDAO from "./dao/room.dao.js";
 import MessageDAO from "./dao/message.dao.js";
+import MessageDeletedDAO from "./dao/messageDeleted.dao.js";
+
 
 dotenv.config();
 
@@ -24,6 +26,7 @@ async function startServer() {
     await UserDAO.injectDB(client);
     await RoomDAO.injectDB(client);
     await MessageDAO.injectDB(client);
+    await MessageDeletedDAO.injectDB(client);
 
     appServer.listen(PORT, () => {
       console.log(`Server running on port ${PORT}`);

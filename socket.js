@@ -84,9 +84,9 @@ export default function initSocket(httpServer) {
       io.to(roomId).emit("receive_msg", newMessage);
     });
 
-socket.on("image_msg", async (message) => {
-  io.to(message.Room_id.toString()).emit("receive_msg", message);
-});
+    socket.on("image_msg", async (message) => {
+      io.to(message.Room_id.toString()).emit("receive_msg", message);
+    });
 
     /* CREATE ROOM */
     socket.on("create_room", async ({ roomName }) => {
@@ -127,6 +127,54 @@ socket.on("image_msg", async (message) => {
       const rooms = await RoomController.getAllItem();
       io.emit("room_list", rooms);
     });
+
+    /* UPDATE MESSAGE */
+    socket.on("update_message", async ({ messageId, newContent, roomId }) => {
+
+      if (!ObjectId.isValid(messageId)) return;
+      if (!ObjectId.isValid(roomId)) return;
+      if (!newContent || !newContent.trim()) return;
+
+      // Lấy message hiện tại
+      const message = await MessageController.findById(messageId);
+      if (!message) return;
+
+      // Chỉ cho phép chủ tin nhắn sửa
+      if (String(message.Sender_id) !== String(socket.userId)) return;
+
+      // Update DB
+      socket.on("update_message", async ({ messageId, newContent, roomId }) => {
+
+        const updatedMessage = await MessageController.updateItem({
+          messageId,
+          newContent
+        });
+
+        if (!updatedMessage) return;
+
+        io.to(roomId).emit("message_updated", updatedMessage);
+      });
+
+      // Lấy lại message sau khi update
+      const updatedMessage = await MessageController.findById(messageId);
+
+      io.to(roomId).emit("message_updated", updatedMessage);
+    });
+
+
+    /* DELETE MESSAGE */
+    socket.on("delete_message", async ({ messageId, roomId }) => {
+
+      const message = await MessageController.findById(messageId);
+      if (!message) return;
+
+      if (String(message.Sender_id) !== String(socket.userId)) return;
+
+      await MessageController.deleteItem(messageId);
+
+      io.to(roomId).emit("message_deleted", { messageId });
+    });
+
 
   });
 }
