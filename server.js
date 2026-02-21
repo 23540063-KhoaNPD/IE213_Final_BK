@@ -7,6 +7,7 @@ import userRoutes from "./routes/user.routes.js";
 import uploadRoutes from "./routes/upload.routes.js";
 import messageUploadRoutes from "./routes/messageUpload.routes.js";
 import uploadImageRoute from "./routes/uploadImage.routes.js";
+import uploadRoomBgRoute from "./routes/uploadRoomBg.routes.js";
 
 const app = express();
 const httpServer = createServer(app);
@@ -19,6 +20,7 @@ app.use("/api/users", userRoutes);
 app.use("/api/upload-avatar", uploadRoutes);
 app.use("/api/upload-message", messageUploadRoutes);
 app.use("/api/upload-image", uploadImageRoute);
+app.use("/api/upload-room-bg", uploadRoomBgRoute);
 
 app.get("/", (req, res) => {
   res.json({ message: "Backend running..." });

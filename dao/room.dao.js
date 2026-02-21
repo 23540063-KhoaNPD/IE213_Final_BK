@@ -21,10 +21,10 @@ export default class RoomDAO {
     return await collection.deleteOne({ _id: new ObjectId(roomId) });
   }
 
-  static async update(roomId, newName) {
+  static async update(id, data) {
     return await collection.updateOne(
-      { _id: new ObjectId(roomId) },
-      { $set: { Room_name: newName } }
+      { _id: new ObjectId(id) },
+      { $set: data }
     );
   }
 }

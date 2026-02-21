@@ -103,14 +103,15 @@ export default function initSocket(httpServer) {
     });
 
     /* UPDATE ROOM */
-    socket.on("update_room", async ({ roomId, newName }) => {
+    socket.on("update_room", async ({ roomId, newName, newBackground }) => {
 
       if (!ObjectId.isValid(roomId)) return;
       if (!newName || !newName.trim()) return;
 
       await RoomController.updateItem({
         _id: roomId,
-        Room_name: newName.trim()
+        Room_name: newName.trim(),
+        room_bg: newBackground
       });
 
       const rooms = await RoomController.getAllItem();

@@ -19,6 +19,7 @@ export default class RoomController {
   }
 
   static async updateItem(data) {
-    return await RoomDAO.update(data._id, data.Room_name);
+    const { _id, ...updateData } = data;
+    return await RoomDAO.update(_id, updateData);
   }
 }
