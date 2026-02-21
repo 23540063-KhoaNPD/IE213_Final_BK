@@ -12,8 +12,6 @@ const upload = multer({ dest: "temp/" });
 
 router.post("/", upload.single("image"), async (req, res) => {
   try {
-    console.log("REQ.FILE:", req.file);   // 👈 THÊM DÒNG NÀY
-    console.log("REQ.BODY:", req.body);   // 👈 THÊM DÒNG NÀY
 
     const token = req.headers.authorization?.split(" ")[1];
     const decoded = jwt.verify(token, process.env.JWTKEY);

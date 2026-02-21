@@ -39,10 +39,20 @@ export default class MessageDAO {
     static async update(id, data) {
         if (!ObjectId.isValid(id)) return null;
 
-        return await collection.updateOne(
+        const result = await collection.findOneAndUpdate(
             { _id: new ObjectId(id) },
-            { $set: data }
+            {
+                $set: {
+                    ...data,
+                    Edited: true
+                }
+            },
+            {
+                returnDocument: "after"
+            }
         );
+
+        return result.value;
     }
 
     static async delete(id) {

@@ -133,34 +133,31 @@ export default function initSocket(httpServer) {
 
       if (!ObjectId.isValid(messageId)) return;
       if (!ObjectId.isValid(roomId)) return;
-      if (!newContent || !newContent.trim()) return;
 
-      // Lấy message hiện tại
       const message = await MessageController.findById(messageId);
       if (!message) return;
 
       // Chỉ cho phép chủ tin nhắn sửa
       if (String(message.Sender_id) !== String(socket.userId)) return;
 
-      // Update DB
-      socket.on("update_message", async ({ messageId, newContent, roomId }) => {
-
-        const updatedMessage = await MessageController.updateItem({
-          messageId,
-          newContent
-        });
-
-        if (!updatedMessage) return;
-
-        io.to(roomId).emit("message_updated", updatedMessage);
+      const updatedMessage = await MessageController.updateItem({
+        messageId,
+        newContent
       });
 
-      // Lấy lại message sau khi update
-      const updatedMessage = await MessageController.findById(messageId);
+      if (!updatedMessage) return;
 
-      io.to(roomId).emit("message_updated", updatedMessage);
+      const user = await UserController.findById(message.Sender_id);
+
+      io.to(roomId).emit("message_updated", {
+        ...updatedMessage,
+        _id: updatedMessage._id.toString(),  // 🔥 QUAN TRỌNG
+        Sender_id: updatedMessage.Sender_id.toString(),
+        Room_id: updatedMessage.Room_id.toString(),
+        Sender_name: user?.Username,
+        Sender_avatar: user?.Avatar
+      });
     });
-
 
     /* DELETE MESSAGE */
     socket.on("delete_message", async ({ messageId, roomId }) => {

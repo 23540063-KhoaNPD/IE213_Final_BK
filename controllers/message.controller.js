@@ -43,16 +43,15 @@ export default class MessageController {
 
   static async updateItem({ messageId, newContent }) {
 
-    if (!ObjectId.isValid(messageId)) return null;
-
-    await MessageDAO.update(messageId, {
+    const updatedData = {
       Content: newContent,
-      Edited: true
-    });
+      Edited: true,
+      Timestamp: new Date()   // 🔥 THÊM DÒNG NÀY
+    };
 
-    const updatedMessage = await MessageDAO.findById(messageId);
+    await MessageDAO.update(messageId, updatedData);
 
-    return updatedMessage;
+    return await this.findById(messageId);
   }
 
   static async deleteItem(messageId) {
