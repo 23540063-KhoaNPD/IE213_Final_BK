@@ -5,20 +5,15 @@ import dns from "dns";
 // console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
 
 const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 465,           // Changed from 587 to 465
-  secure: true,         // Use SSL/TLS for port 465
+  service: "gmail",
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
-  // Ensure we bypass Render's IPv6 networking quirks
+  // Still keep the IPv4 force just in case
   lookup: (hostname, options, callback) => {
     dns.lookup(hostname, { family: 4 }, callback);
-  },
-  // Set a longer timeout for cold starts
-  connectionTimeout: 10000, 
-  greetingTimeout: 10000
+  }
 });
 
 // Add this to your mailer file to test the connection immediately
