@@ -1,93 +1,70 @@
-import nodemailer from "nodemailer";
 import { google } from "googleapis";
 import "dotenv/config";
 
-const OAuth2 = google.auth.OAuth2;
-
 /*
-ENV REQUIRED:
+ENV REQUIRED
 
 GOOGLE_CLIENT_ID=
 GOOGLE_CLIENT_SECRET=
 GOOGLE_REFRESH_TOKEN=
-EMAIL_USER=your@gmail.com
+EMAIL_USER=
 FRONTEND_URL=
 */
 
-const oauth2Client = new OAuth2(
-  process.env.GOOGLE_CLIENT_ID,
-  process.env.GOOGLE_CLIENT_SECRET,
-  "https://developers.google.com/oauthplayground"
-);
+const oauth2Client =
+  new google.auth.OAuth2(
+
+    process.env.GOOGLE_CLIENT_ID,
+    process.env.GOOGLE_CLIENT_SECRET,
+
+    "https://developers.google.com/oauthplayground"
+  );
 
 oauth2Client.setCredentials({
-  refresh_token: process.env.GOOGLE_REFRESH_TOKEN,
+
+  refresh_token:
+    process.env.GOOGLE_REFRESH_TOKEN
+
 });
 
-async function createTransporter() {
+const gmail =
+  google.gmail({
 
-  // Gmail API auto generate access token
-  const accessToken =
-    await oauth2Client.getAccessToken();
+    version: "v1",
+    auth: oauth2Client
 
-  const transporter =
-    nodemailer.createTransport({
+  });
 
-      service: "gmail",
 
-      auth: {
-        type: "OAuth2",
+// encode email → Gmail API format
+function makeBody(message) {
 
-        user: process.env.EMAIL_USER,
+  return Buffer
+    .from(message)
 
-        clientId:
-          process.env.GOOGLE_CLIENT_ID,
+    .toString("base64")
 
-        clientSecret:
-          process.env.GOOGLE_CLIENT_SECRET,
-
-        refreshToken:
-          process.env.GOOGLE_REFRESH_TOKEN,
-
-        accessToken:
-          accessToken?.token,
-      },
-    });
-
-  // Verify connection once
-  await transporter.verify();
-
-  console.log("✅ Gmail ready");
-
-  return transporter;
+    .replace(/\+/g, "-")
+    .replace(/\//g, "_")
+    .replace(/=+$/, "");
 }
 
+
+
 export const sendResetEmail =
-async (to, token) => {
+  async (to, token) => {
 
-  try {
+    try {
 
-    const transporter =
-      await createTransporter();
+      const frontendUrl =
+        process.env.FRONTEND_URL
+        || "http://localhost:5173";
 
-    const frontendUrl =
-      process.env.FRONTEND_URL
-      || "http://localhost:5173";
+      const resetLink =
+        `${frontendUrl}/reset-password?token=${token}`;
 
-    const resetLink =
-      `${frontendUrl}/reset-password?token=${token}`;
 
-    await transporter.sendMail({
-
-      from:
-      `"Chat App" <${process.env.EMAIL_USER}>`,
-
-      to,
-
-      subject:
-      "Password Reset Request",
-
-      html:`
+      const html = `
 
 <div style="font-family:Arial">
 
@@ -120,18 +97,47 @@ Expire in 15 minutes.
 
 </div>
 
-`
-    });
+`;
 
-    console.log("✅ Reset email sent:", to);
 
-  } catch (err) {
+      const message = [
 
-    console.error(
-      "❌ Send mail error:",
-      err
-    );
+        `From: Chat App <${process.env.EMAIL_USER}>`,
+        `To:${to}`,
+        `Subject:Password Reset Request`,
+        "MIME-Version: 1.0",
+        "Content-Type:text/html;charset=utf-8",
 
-    throw err;
-  }
-};
+        "",
+        html
+
+      ].join("\n");
+
+
+      const raw = makeBody(message);
+
+
+      await gmail.users.messages.send({
+
+        userId: "me",
+
+        requestBody: {
+
+          raw
+
+        }
+
+      });
+
+      console.log("✅ Reset email sent:", to);
+
+    }
+    catch (err) {
+
+      console.error("❌ Gmail API error:", err);
+
+      throw err;
+
+    }
+
+  };
