@@ -30,7 +30,7 @@ async function startServer() {
     await MessageDAO.injectDB(client);
     await MessageDeletedDAO.injectDB(client);
 
-    appServer.listen(PORT, () => {
+    appServer.listen(PORT, "0.0.0.0", () => {
       console.log(`Server running on port ${PORT}`);
     });
 

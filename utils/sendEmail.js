@@ -16,11 +16,20 @@ const transporter = nodemailer.createTransport({
 });
 
 // Add this to your mailer file to test the connection immediately
+// Using async/await
+try {
+  await transporter.verify();
+  console.log("Server is ready to take our messages");
+} catch (err) {
+  console.error("Verification failed", err);
+}
+
+// Using callbacks
 transporter.verify((error, success) => {
   if (error) {
-    console.error("❌ SMTP Connection Error:", error.message);
+    console.error(error);
   } else {
-    console.log("🚀 Server is ready to take our messages");
+    console.log("Server is ready to take our messages");
   }
 });
 
