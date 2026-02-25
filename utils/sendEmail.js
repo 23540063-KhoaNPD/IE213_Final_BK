@@ -21,6 +21,15 @@ const transporter = nodemailer.createTransport({
   greetingTimeout: 10000
 });
 
+// Add this to your mailer file to test the connection immediately
+transporter.verify((error, success) => {
+  if (error) {
+    console.error("❌ SMTP Connection Error:", error.message);
+  } else {
+    console.log("🚀 Server is ready to take our messages");
+  }
+});
+
 export const sendResetEmail = async (to, token) => {
 
     const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
