@@ -5,15 +5,14 @@ import dns from "dns";
 // console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
 
 const transporter = nodemailer.createTransport({
-  service: "gmail",
+  service: "gmail", // Shortcut for Gmail's SMTP settings - see Well-Known Services
   auth: {
-    user: process.env.EMAIL_USER,
-    pass: process.env.EMAIL_PASS
+    type: "OAuth2",
+    user: "23540063@gm.uit.edu.vn",
+    clientId: process.env.GOOGLE_CLIENT_ID,
+    clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+    refreshToken: process.env.GOOGLE_REFRESH_TOKEN,
   },
-  // Still keep the IPv4 force just in case
-  lookup: (hostname, options, callback) => {
-    dns.lookup(hostname, { family: 4 }, callback);
-  }
 });
 
 // Add this to your mailer file to test the connection immediately
