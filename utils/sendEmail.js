@@ -6,19 +6,19 @@ import dns from "dns";
 
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
-  port: 587,
-  secure: false,
+  port: 465,           // Changed from 587 to 465
+  secure: true,         // Use SSL/TLS for port 465
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
-  tls: {
-    rejectUnauthorized: false
-  },
-  // 🔥 ép DNS lookup chỉ dùng IPv4
+  // Ensure we bypass Render's IPv6 networking quirks
   lookup: (hostname, options, callback) => {
-    return dns.lookup(hostname, { family: 4 }, callback);
-  }
+    dns.lookup(hostname, { family: 4 }, callback);
+  },
+  // Set a longer timeout for cold starts
+  connectionTimeout: 10000, 
+  greetingTimeout: 10000
 });
 
 export const sendResetEmail = async (to, token) => {
