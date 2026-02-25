@@ -68,31 +68,41 @@ export default class UserController {
   }
 
   static async requestReset(req, res) {
+    try {
+      const { email } = req.body;
 
-    const { email } = req.body;
+      if (!email) {
+        return res.status(400).json({ message: "Email is required" });
+      }
 
-    console.log(`find email: ${email}`)
-    const user = await UserDAO.findByEmail(email);
+      console.log(`find email: ${email}`);
 
-    if (!user) {
-      return res.json({ message: "If email exists, reset link sent" });
+      const user = await UserDAO.findByEmail(email);
+
+      if (!user) {
+        return res.json({ message: "If email exists, reset link sent" });
+      }
+
+      const rawToken = crypto.randomBytes(32).toString("hex");
+
+      const hashedToken = crypto
+        .createHash("sha256")
+        .update(rawToken)
+        .digest("hex");
+
+      await UserDAO.update(user._id, {
+        ResetToken: hashedToken,
+        ResetTokenExp: new Date(Date.now() + 15 * 60 * 1000)
+      });
+
+      await sendResetEmail(user.Email, rawToken);
+
+      res.json({ message: "If email exists, reset link sent" });
+
+    } catch (error) {
+      console.error("REQUEST RESET ERROR:", error);
+      res.status(500).json({ message: "Internal server error" });
     }
-
-    const rawToken = crypto.randomBytes(32).toString("hex");
-
-    const hashedToken = crypto
-      .createHash("sha256")
-      .update(rawToken)
-      .digest("hex");
-
-    await UserDAO.update(user._id, {
-      ResetToken: hashedToken,
-      ResetTokenExp: new Date(Date.now() + 15 * 60 * 1000)
-    });
-
-    await sendResetEmail(user.Email, rawToken);
-
-    res.json({ message: "If email exists, reset link sent" });
   }
 
   static async resetPassword(req, res) {
