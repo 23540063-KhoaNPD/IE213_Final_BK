@@ -15,7 +15,6 @@
     "body-parser": "^2.2.2",
     "cloudinary": "^2.9.0",
     "cors": "^2.8.6",
-    "dns": "^0.1.2",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
     "httpserver": "^0.0.5",
