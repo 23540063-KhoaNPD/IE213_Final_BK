@@ -17,7 +17,12 @@ const allowedOrigins = [
   `${process.env.FRONTEND_URL}`
 ];
 
-app.use(cors({ origin: "*" }));
+// Configure CORS
+app.use(cors({
+  origin: '*', // Only allow this specific origin
+  methods: ['GET', 'POST', 'PUT', 'DELETE'], // Specify allowed methods
+  allowedHeaders: ['Content-Type', 'Authorization'] // Specify allowed headers
+}));
 
 // app.use(
 //   cors({
