@@ -1,7 +1,7 @@
 import nodemailer from "nodemailer";
 
-console.log("EMAIL_USER:", process.env.EMAIL_USER);
-console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
+// console.log("EMAIL_USER:", process.env.EMAIL_USER);
+// console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
 
 const transporter = nodemailer.createTransport({
     service: "gmail",
@@ -13,9 +13,7 @@ const transporter = nodemailer.createTransport({
 
 export const sendResetEmail = async (to, token) => {
 
-    // 🔥 Fallback nếu không có FRONTEND_URL
-    const frontendUrl =
-        process.env.FRONTEND_URL || "http://localhost:5173";
+    const frontendUrl = process.env.FRONTEND_URL || "http://localhost:5173";
 
     const resetLink = `${frontendUrl}/reset-password?token=${token}`;
 
