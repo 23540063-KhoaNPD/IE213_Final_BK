@@ -71,6 +71,7 @@ export default class UserController {
 
     const { email } = req.body;
 
+    console.log(`find email: ${email}`)
     const user = await UserDAO.findByEmail(email);
 
     if (!user) {
