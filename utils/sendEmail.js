@@ -1,4 +1,5 @@
 import nodemailer from "nodemailer";
+import dns from "dns";
 
 // console.log("EMAIL_USER:", process.env.EMAIL_USER);
 // console.log("EMAIL_PASS:", process.env.EMAIL_PASS);
@@ -6,14 +7,17 @@ import nodemailer from "nodemailer";
 const transporter = nodemailer.createTransport({
   host: "smtp.gmail.com",
   port: 587,
-  secure: false, // ❗ 587 thì phải false
-  family: 4,     // ❗ ép dùng IPv4 (fix ENETUNREACH)
+  secure: false,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
   },
   tls: {
     rejectUnauthorized: false
+  },
+  // 🔥 ép DNS lookup chỉ dùng IPv4
+  lookup: (hostname, options, callback) => {
+    return dns.lookup(hostname, { family: 4 }, callback);
   }
 });
 
