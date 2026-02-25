@@ -16,6 +16,14 @@ app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
+app.get("/health", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    uptime: process.uptime(),
+    timestamp: Date.now()
+  });
+});
+
 app.use("/api/users", userRoutes);
 app.use("/api/upload-avatar", uploadRoutes);
 app.use("/api/upload-message", messageUploadRoutes);

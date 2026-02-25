@@ -89,7 +89,6 @@ export default class UserController {
       ResetTokenExp: new Date(Date.now() + 15 * 60 * 1000)
     });
 
-    // 🔥 GỬI EMAIL
     await sendResetEmail(user.Email, rawToken);
 
     res.json({ message: "If email exists, reset link sent" });
