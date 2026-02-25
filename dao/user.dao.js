@@ -8,7 +8,9 @@ export default class UserDAO {
   static async injectDB(conn) {
     if (collection) return;
     db = conn;
-    collection = await conn.db(process.env.DB_CONTAINER).collection(process.env.COLLECTION_USER);
+    collection = await conn
+      .db(process.env.DB_CONTAINER)
+      .collection(process.env.COLLECTION_USER);
   }
 
   static async findByEmail(email) {
@@ -20,24 +22,15 @@ export default class UserDAO {
   }
 
   static async findById(id) {
-    console.log("findById ID:", id);
-
-    // Nếu id không tồn tại
     if (!id) return null;
 
     let objectId;
 
-    // Nếu đã là ObjectId thì dùng luôn
     if (id instanceof ObjectId) {
       objectId = id;
-    }
-    // Nếu là string và hợp lệ thì convert
-    else if (ObjectId.isValid(id)) {
+    } else if (ObjectId.isValid(id)) {
       objectId = new ObjectId(id);
-    }
-    // Nếu không hợp lệ
-    else {
-      console.warn("Invalid ObjectId:", id);
+    } else {
       return null;
     }
 
@@ -47,6 +40,12 @@ export default class UserDAO {
     );
   }
 
+  static async update(userId, updateFields) {
+    return await collection.updateOne(
+      { _id: new ObjectId(userId) },
+      { $set: updateFields }
+    );
+  }
 
   static async updateAvatar(userId, avatar) {
     return await collection.updateOne(
@@ -54,4 +53,21 @@ export default class UserDAO {
       { $set: { Avatar: avatar } }
     );
   }
+
+  static async findByResetToken(token) {
+    return await collection.findOne({ ResetToken: token });
+  }
+
+  static async clearResetToken(userId) {
+    return await collection.updateOne(
+      { _id: new ObjectId(userId) },
+      {
+        $set: {
+          ResetToken: null,
+          ResetTokenExp: null
+        }
+      }
+    );
+  }
+
 }

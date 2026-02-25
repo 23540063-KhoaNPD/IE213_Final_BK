@@ -1,4 +1,6 @@
 import dotenv from "dotenv";
+dotenv.config();
+
 import mongodb from 'mongodb';
 
 import appServer from "./server.js";
@@ -9,7 +11,7 @@ import MessageDAO from "./dao/message.dao.js";
 import MessageDeletedDAO from "./dao/messageDeleted.dao.js";
 
 
-dotenv.config();
+
 
 const PORT = process.env.PORT || 8080;
 const client = new mongodb.MongoClient(process.env.DB_URI);

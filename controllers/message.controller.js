@@ -46,7 +46,8 @@ export default class MessageController {
     const updatedData = {
       Content: newContent,
       Edited: true,
-      Timestamp: new Date()   // 🔥 THÊM DÒNG NÀY
+      // Timestamp: new Date()
+      EditedAt: new Date()
     };
 
     await MessageDAO.update(messageId, updatedData);
