@@ -27,4 +27,38 @@ export default class RoomDAO {
       { $set: data }
     );
   }
+
+  /* ===== GET ROOMS FOR USER ===== */
+  static async getRoomsForUser(userId) {
+    return await collection.find({
+      $or: [
+        { isPrivate: false },
+        { members: new ObjectId(userId) }
+      ]
+    }).toArray();
+  }
+
+  static async getById(id) {
+    return await collection.findOne({
+      _id: new ObjectId(id)
+    });
+  }
+
+  static async findDirectRoom(userA, userB) {
+    return await collection.findOne({
+      isDirect: true,
+      members: {
+        $all: [
+          new ObjectId(userA),
+          new ObjectId(userB)
+        ],
+        $size: 2
+      }
+    });
+  }
+
+    static async find(filter) {
+    return await collection.find(filter).toArray();
+  }
+
 }

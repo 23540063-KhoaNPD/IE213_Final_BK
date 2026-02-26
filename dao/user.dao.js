@@ -71,4 +71,8 @@ export default class UserDAO {
     );
   }
 
+  static async getAll() {
+    return await collection.find().toArray();
+  }
+
 }

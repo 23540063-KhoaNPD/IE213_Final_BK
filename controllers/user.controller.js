@@ -41,6 +41,10 @@ export default class UserController {
     });
   }
 
+  static async findByEmail(email) {
+  return await UserDAO.findByEmail(email);
+}
+
   static async signup(req, res) {
 
     const { name, email, password } = req.body;
@@ -167,8 +171,12 @@ export default class UserController {
   }
 
   static async updateNameById(userId, name) {
-  return await UserDAO.update(userId, {
-    Username: name
-  });
-}
+    return await UserDAO.update(userId, {
+      Username: name
+    });
+  }
+
+  static async getAllUsers() {
+    return await UserDAO.getAll();
+  }
 }

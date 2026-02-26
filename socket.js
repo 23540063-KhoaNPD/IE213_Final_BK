@@ -29,6 +29,42 @@ export default function initSocket(httpServer) {
   io.on("connection", (socket) => {
 
     console.log("User connected:", socket.userId);
+    socket.join(socket.userId);
+
+    /* GET USERS */
+    socket.on("get_users", async () => {
+
+      const users = await UserController.getAllUsers();
+
+      socket.emit("user_list", users);
+
+    });
+
+    /* FIND USER BY EMAIL */
+    socket.on("find_user_by_email", async ({ email }) => {
+
+      if (!email) return;
+
+      const user = await UserController.findByEmail(email);
+
+      if (!user) {
+        socket.emit("user_not_found");
+        return;
+      }
+
+      // Không cho tìm chính mình
+      if (String(user._id) === String(socket.userId)) {
+        socket.emit("user_not_found");
+        return;
+      }
+
+      socket.emit("user_found", {
+        _id: user._id,
+        Username: user.Username,
+        Email: user.Email
+      });
+
+    });
 
     /* SEND MY PROFILE */
     (async () => {
@@ -41,9 +77,42 @@ export default function initSocket(httpServer) {
       });
     })();
 
+    socket.on("create_direct_room", async ({ targetUserId }) => {
+
+      if (!targetUserId) return;
+
+      const existingRoom = await RoomController.findDirectRoom(
+        socket.userId,
+        targetUserId
+      );
+
+      // 🔥 Nếu đã tồn tại → join luôn
+      if (existingRoom) {
+        socket.emit("direct_room_ready", existingRoom);
+        return;
+      }
+
+      // 🔥 Nếu chưa tồn tại → tạo mới
+      const result = await RoomController.addItem({
+        Room_name: null,
+        creator: socket.userId,
+        isPrivate: true,
+        isDirect: true,
+        members: [socket.userId, targetUserId]
+      });
+
+      const newRoom = await RoomController.getById(result.insertedId);
+
+      socket.emit("direct_room_ready", newRoom);
+      io.to(targetUserId).emit("room_created", newRoom);
+
+    });
+
     /* LOAD ROOMS */
     socket.on("get_rooms", async () => {
-      const rooms = await RoomController.getAllItem();
+
+      const rooms = await RoomController.getRoomsForUser(socket.userId);
+
       socket.emit("room_list", rooms);
     });
 
@@ -81,7 +150,13 @@ export default function initSocket(httpServer) {
         type: "Text"
       });
 
-      io.to(roomId).emit("receive_msg", newMessage);
+      io.to(roomId).emit("receive_msg", {
+        ...newMessage,
+        _id: newMessage._id.toString(),
+        Room_id: roomId.toString(), // 🔥 BẮT BUỘC
+        Sender_id: socket.userId.toString()
+      });
+
     });
 
     socket.on("image_msg", async (message) => {
@@ -89,17 +164,41 @@ export default function initSocket(httpServer) {
     });
 
     /* CREATE ROOM */
-    socket.on("create_room", async ({ roomName }) => {
+    socket.on("create_room", async ({ roomName, isPrivate, targetUserId }) => {
+
+      // console.log("CREATE ROOM DATA:", {
+      //   roomName,
+      //   isPrivate,
+      //   targetUserId
+      // });
 
       if (!roomName || !roomName.trim()) return;
 
-      await RoomController.addItem({
-        room_name: roomName.trim(),
-        creator: socket.userId
+      let members = [];
+
+      if (isPrivate && targetUserId) {
+        members = [
+          new ObjectId(socket.userId),
+          new ObjectId(targetUserId)
+        ];
+      }
+
+      const result = await RoomController.addItem({
+        Room_name: roomName.trim(),
+        creator: new ObjectId(socket.userId),
+        isPrivate: isPrivate || false,
+        members
       });
 
-      const rooms = await RoomController.getAllItem();
-      io.emit("room_list", rooms);
+      const newRoom = await RoomController.getById(result.insertedId);
+
+      if (isPrivate) {
+        socket.emit("room_created", newRoom);
+        io.to(targetUserId.toString()).emit("room_created", newRoom);
+      } else {
+        io.emit("room_created", newRoom);
+      }
+
     });
 
     /* UPDATE ROOM */
