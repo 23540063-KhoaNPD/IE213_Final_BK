@@ -173,6 +173,23 @@ export default function initSocket(httpServer) {
       io.to(roomId).emit("message_deleted", { messageId });
     });
 
+    /* UPDATE NAME */
+    socket.on("update_name", async ({ name }) => {
+
+      if (!name || !name.trim()) return;
+
+      if (!ObjectId.isValid(socket.userId)) return;
+
+      await UserController.updateNameById(
+        new ObjectId(socket.userId),
+        name.trim()
+      );
+
+      io.emit("name_updated", {
+        userId: socket.userId.toString(),
+        name: name.trim()
+      });
+    });
 
   });
 }

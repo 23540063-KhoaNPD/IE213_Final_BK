@@ -41,6 +41,7 @@ export default class UserDAO {
   }
 
   static async update(userId, updateFields) {
+    console.log(`Update ${updateFields}`);
     return await collection.updateOne(
       { _id: new ObjectId(userId) },
       { $set: updateFields }

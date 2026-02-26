@@ -137,4 +137,38 @@ export default class UserController {
 
     res.json({ message: "Password updated successfully" });
   }
+
+  static async updateName(req, res) {
+    console.log(`update controller point:`)
+    try {
+      const { name } = req.body;
+
+      if (!name || !name.trim()) {
+        return res.status(400).json({ message: "Name is required" });
+      }
+
+      const userId = req.userId;
+      console.log(`check user id `, req.userId)
+
+      if (!userId) {
+        return res.status(401).json({ message: "Unauthorized" });
+      }
+
+      await UserDAO.update(userId, {
+        Username: name.trim()
+      });
+
+      res.json({ name: name.trim() });
+
+    } catch (error) {
+      console.error("UPDATE NAME ERROR:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
+  }
+
+  static async updateNameById(userId, name) {
+  return await UserDAO.update(userId, {
+    Username: name
+  });
+}
 }
