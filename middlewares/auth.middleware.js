@@ -1,3 +1,5 @@
+console.log(`starting jwt auth middle ware`)
+
 import jwt from "jsonwebtoken";
 
 export const verifyToken = (req, res, next) => {

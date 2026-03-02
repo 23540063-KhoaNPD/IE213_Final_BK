@@ -1,3 +1,5 @@
+console.log(`starting msg deleted dao`)
+
 import { ObjectId } from "mongodb";
 
 let collection;

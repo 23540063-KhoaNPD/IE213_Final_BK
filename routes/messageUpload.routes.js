@@ -1,3 +1,5 @@
+console.log(`starting message upload router`)
+
 import express from "express";
 import multer from "multer";
 import fs from "fs";

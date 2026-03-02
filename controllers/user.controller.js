@@ -1,3 +1,5 @@
+console.log(`starting user controller`)
+
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import UserDAO from "../dao/user.dao.js"

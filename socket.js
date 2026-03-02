@@ -1,3 +1,5 @@
+console.log(`starting socket`)
+
 import { Server } from "socket.io";
 import jwt from "jsonwebtoken";
 import { ObjectId } from "mongodb";

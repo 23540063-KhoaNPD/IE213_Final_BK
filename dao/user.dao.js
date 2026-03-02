@@ -1,3 +1,5 @@
+console.group(`starting user dao`)
+
 import { ObjectId } from "mongodb";
 
 let db;

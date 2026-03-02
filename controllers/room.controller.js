@@ -1,3 +1,5 @@
+console.log(`starting room controller`)
+
 import RoomDAO from "../dao/room.dao.js";
 import { ObjectId } from "mongodb";
 

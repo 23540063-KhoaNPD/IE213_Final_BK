@@ -1,3 +1,5 @@
+console.log(`starting cloudinary config`)
+
 import { v2 as cloudinary } from "cloudinary";
 
 cloudinary.config({

@@ -5,7 +5,7 @@ import jwt from "jsonwebtoken";
 import { v2 as cloudinary } from "cloudinary";
 
 const router = express.Router();
-const upload = multer({ dest: "temp/" });
+const upload = multer({ storage: multer.memoryStorage() });
 
 router.post("/", upload.single("image"), async (req, res) => {
   try {
@@ -21,7 +21,7 @@ router.post("/", upload.single("image"), async (req, res) => {
 
     fs.unlinkSync(req.file.path);
 
-    return res.json({ imageUrl }); // 🔥 CHỈ TRẢ URL
+    return res.json({ imageUrl });
 
   } catch (err) {
     console.error(err);

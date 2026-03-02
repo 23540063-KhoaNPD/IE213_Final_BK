@@ -1,3 +1,5 @@
+console.log(`starting get token utility`)
+
 import { google } from "googleapis";
 
 import dotenv from "dotenv";

@@ -1,3 +1,5 @@
+console.log(`starting msg controller`)
+
 import MessageDAO from "../dao/message.dao.js";
 import UserDAO from "../dao/user.dao.js";
 import { ObjectId } from "mongodb";

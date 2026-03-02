@@ -1,3 +1,5 @@
+console.log(`starting send email utility`)
+
 import { google } from "googleapis";
 import "dotenv/config";
 

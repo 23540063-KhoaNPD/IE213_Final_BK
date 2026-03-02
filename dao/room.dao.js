@@ -1,3 +1,5 @@
+console.log(`starting room dao`)
+
 import { ObjectId } from "mongodb";
 
 let collection;
