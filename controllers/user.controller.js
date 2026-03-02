@@ -44,25 +44,41 @@ export default class UserController {
   }
 
   static async findByEmail(email) {
-  return await UserDAO.findByEmail(email);
-}
+    return await UserDAO.findByEmail(email);
+  }
 
   static async signup(req, res) {
+    try {
+      const { name, email, password } = req.body;
 
-    const { name, email, password } = req.body;
+      if (!name || !email || !password) {
+        return res.status(400).json({ message: "All fields are required" });
+      }
 
-    const hashed = await bcrypt.hash(password, SALT);
+      // 🔎 Kiểm tra email đã tồn tại chưa
+      const existingUser = await UserDAO.findByEmail(email);
 
-    await UserDAO.create({
-      Username: name,
-      Email: email,
-      PW: hashed,
-      Avatar: null,
-      ResetToken: null,
-      ResetTokenExp: null
-    });
+      if (existingUser) {
+        return res.status(409).json({ message: "Email already exists" });
+      }
 
-    res.json({ message: "User created" });
+      const hashed = await bcrypt.hash(password, SALT);
+
+      await UserDAO.create({
+        Username: name.trim(),
+        Email: email.toLowerCase().trim(),
+        PW: hashed,
+        Avatar: null,
+        ResetToken: null,
+        ResetTokenExp: null
+      });
+
+      res.status(201).json({ message: "User created" });
+
+    } catch (error) {
+      console.error("SIGNUP ERROR:", error);
+      res.status(500).json({ message: "Internal server error" });
+    }
   }
 
   static async findById(id) {
