@@ -36,7 +36,6 @@ export default class MessageController {
     return await MessageDAO.getByRoom(roomId);
   }
 
-  /* ================= NEW ================= */
 
   static async findById(messageId) {
     if (!ObjectId.isValid(messageId)) return null;
@@ -48,7 +47,6 @@ export default class MessageController {
     const updatedData = {
       Content: newContent,
       Edited: true,
-      // Timestamp: new Date()
       EditedAt: new Date()
     };
 
@@ -61,14 +59,14 @@ export default class MessageController {
 
     if (!ObjectId.isValid(messageId)) return;
 
-    // 1️⃣ Tìm message
+    //  Tìm message
     const message = await MessageDAO.findById(messageId);
     if (!message) return;
 
-    // 2️⃣ Insert sang collection msg_deleted
+    // Insert sang collection msg_deleted
     await MessageDeletedDAO.create(message);
 
-    // 3️⃣ Xoá khỏi collection message
+    // Xoá khỏi collection message
     await MessageDAO.delete(messageId);
 
     return true;

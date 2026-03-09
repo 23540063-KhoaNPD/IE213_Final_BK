@@ -55,7 +55,7 @@ export default class UserController {
         return res.status(400).json({ message: "All fields are required" });
       }
 
-      // 🔎 Kiểm tra email đã tồn tại chưa
+      // Kiểm tra email đã tồn tại chưa
       const existingUser = await UserDAO.findByEmail(email);
 
       if (existingUser) {

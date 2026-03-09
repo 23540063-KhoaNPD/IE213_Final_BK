@@ -88,13 +88,13 @@ export default function initSocket(httpServer) {
         targetUserId
       );
 
-      // 🔥 Nếu đã tồn tại → join luôn
+      // Nếu đã tồn tại → join luôn
       if (existingRoom) {
         socket.emit("direct_room_ready", existingRoom);
         return;
       }
 
-      // 🔥 Nếu chưa tồn tại → tạo mới
+      // Nếu chưa tồn tại → tạo mới
       const result = await RoomController.addItem({
         Room_name: null,
         creator: socket.userId,

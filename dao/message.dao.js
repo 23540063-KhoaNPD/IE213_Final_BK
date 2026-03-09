@@ -28,7 +28,6 @@ export default class MessageDAO {
             .toArray();
     }
 
-    /* ================= NEW ================= */
 
     static async findById(id) {
         if (!ObjectId.isValid(id)) return null;

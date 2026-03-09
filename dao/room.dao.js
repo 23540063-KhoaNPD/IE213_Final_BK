@@ -30,7 +30,7 @@ export default class RoomDAO {
     );
   }
 
-  /* ===== GET ROOMS FOR USER ===== */
+
   static async getRoomsForUser(userId) {
     return await collection.find({
       $or: [
@@ -59,7 +59,7 @@ export default class RoomDAO {
     });
   }
 
-    static async find(filter) {
+  static async find(filter) {
     return await collection.find(filter).toArray();
   }
 
