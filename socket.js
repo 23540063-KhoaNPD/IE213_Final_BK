@@ -263,7 +263,7 @@ export default function initSocket(httpServer) {
 
       io.to(roomId).emit("message_updated", {
         ...updatedMessage,
-        _id: updatedMessage._id.toString(),  // 🔥 QUAN TRỌNG
+        _id: updatedMessage._id.toString(),
         Sender_id: updatedMessage.Sender_id.toString(),
         Room_id: updatedMessage.Room_id.toString(),
         Sender_name: user?.Username,
@@ -311,7 +311,7 @@ export default function initSocket(httpServer) {
         new ObjectId(roomId)
       );
 
-      // 🔥 reload rooms luôn
+      // reload rooms
       const rooms = await RoomController.getRoomsForUser(socket.userId);
       const user = await UserController.findById(socket.userId);
 

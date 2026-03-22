@@ -131,13 +131,13 @@ export default class UserController {
 
     const { token, newPassword } = req.body;
 
-    // 1️⃣ Hash token nhận được
+    //  Hash token nhận được
     const hashedToken = crypto
       .createHash("sha256")
       .update(token)
       .digest("hex");
 
-    // 2️⃣ Tìm user bằng hashed token
+    // Tìm user bằng hashed token
     const user = await UserDAO.findByResetToken(hashedToken);
 
     if (!user) {
@@ -150,7 +150,7 @@ export default class UserController {
 
     const hashedPassword = await bcrypt.hash(newPassword, SALT);
 
-    // 3️⃣ Update password + clear token
+    // Update password + clear token
     await UserDAO.update(user._id, {
       PW: hashedPassword,
       ResetToken: null,

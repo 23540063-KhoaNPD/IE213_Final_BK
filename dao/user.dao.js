@@ -9,7 +9,7 @@ export default class UserDAO {
 
   static async injectDB(conn) {
     if (collection) return;
-    db = conn;
+    // db = conn;
     collection = await conn
       .db(process.env.DB_CONTAINER)
       .collection(process.env.COLLECTION_USER);
