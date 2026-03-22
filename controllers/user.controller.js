@@ -197,4 +197,9 @@ export default class UserController {
   static async getAllUsers() {
     return await UserDAO.getAll();
   }
+
+  static async addHiddenRoom(userId, roomId) {
+    return await UserDAO.addHiddenRoom(userId, roomId);
+  }
+
 }

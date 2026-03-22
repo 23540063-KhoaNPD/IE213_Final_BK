@@ -38,7 +38,12 @@ export default class UserDAO {
 
     return await collection.findOne(
       { _id: objectId },
-      { projection: { Username: 1, Avatar: 1 } }
+      {
+        projection: {
+          Username: 1, Avatar: 1,
+          hidden_rooms: 1
+        }
+      }
     );
   }
 
@@ -75,6 +80,46 @@ export default class UserDAO {
 
   static async getAll() {
     return await collection.find().toArray();
+  }
+
+  static async addHiddenRoom(userId, roomId) {
+
+    const uid = userId instanceof ObjectId
+      ? userId
+      : new ObjectId(userId);
+
+    const rid = roomId instanceof ObjectId
+      ? roomId
+      : new ObjectId(roomId);
+
+    return await collection.updateOne(
+      { _id: uid },
+      {
+        $addToSet: {
+          hidden_rooms: rid   // ✅ tránh duplicate
+        }
+      }
+    );
+  }
+
+  static async removeHiddenRoom(userId, roomId) {
+
+    const uid = userId instanceof ObjectId
+      ? userId
+      : new ObjectId(userId);
+
+    const rid = roomId instanceof ObjectId
+      ? roomId
+      : new ObjectId(roomId);
+
+    return await collection.updateOne(
+      { _id: uid },
+      {
+        $pull: {
+          hidden_rooms: rid
+        }
+      }
+    );
   }
 
 }

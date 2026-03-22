@@ -115,7 +115,17 @@ export default function initSocket(httpServer) {
 
       const rooms = await RoomController.getRoomsForUser(socket.userId);
 
-      socket.emit("room_list", rooms);
+      const user = await UserController.findById(socket.userId);
+
+      const hiddenSet = new Set(
+        (user?.hidden_rooms || []).map(id => id.toString())
+      );
+
+      const filteredRooms = rooms.filter(
+        r => !hiddenSet.has(r._id.toString())
+      );
+
+      socket.emit("room_list", filteredRooms);
     });
 
     /* JOIN ROOM */
@@ -290,6 +300,31 @@ export default function initSocket(httpServer) {
         userId: socket.userId.toString(),
         name: name.trim()
       });
+    });
+
+    socket.on("hide_room", async ({ roomId }) => {
+
+      if (!ObjectId.isValid(roomId)) return;
+
+      await UserController.addHiddenRoom(
+        new ObjectId(socket.userId),
+        new ObjectId(roomId)
+      );
+
+      // 🔥 reload rooms luôn
+      const rooms = await RoomController.getRoomsForUser(socket.userId);
+      const user = await UserController.findById(socket.userId);
+
+      const hiddenSet = new Set(
+        (user?.hidden_rooms || []).map(id => id.toString())
+      );
+
+      const filteredRooms = rooms.filter(
+        r => !hiddenSet.has(r._id.toString())
+      );
+
+      socket.emit("room_list", filteredRooms);
+
     });
 
   });
