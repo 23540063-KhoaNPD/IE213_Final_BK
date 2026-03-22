@@ -96,7 +96,7 @@ export default class UserDAO {
       { _id: uid },
       {
         $addToSet: {
-          hidden_rooms: rid   // ✅ tránh duplicate
+          hidden_rooms: rid   // tránh duplicate
         }
       }
     );
